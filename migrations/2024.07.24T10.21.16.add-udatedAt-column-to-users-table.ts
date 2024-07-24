@@ -1,9 +1,10 @@
 import { Migration } from 'config/umzug';
-import { DataType } from 'sequelize-typescript';
+
+import { DataTypes } from 'sequelize';
 
 export const up: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
-    await context.addColumn('Users', 'updatedAt', DataType.DATE, {
+    await context.addColumn('Users', 'updatedAt', DataTypes.DATE, {
       transaction,
     });
   });

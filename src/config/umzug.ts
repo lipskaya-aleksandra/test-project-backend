@@ -8,7 +8,7 @@ const sequelize = new Sequelize(sequelizeConfig);
 
 const umzug = new Umzug<QueryInterface>({
   migrations: {
-    glob: path.join(process.cwd(), '/migrations/*.ts'),
+    glob: 'migrations/*.ts',
   },
   storage: new SequelizeStorage({ sequelize }),
   context: sequelize.getQueryInterface(),

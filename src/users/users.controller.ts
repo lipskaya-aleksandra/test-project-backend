@@ -25,6 +25,7 @@ export class UsersController {
   @Get()
   getAll(@Query() paginationQuery: PaginationQueryDto) {
     const users = this.usersService.getAll(paginationQuery);
+
     return users;
   }
 

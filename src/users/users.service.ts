@@ -1,5 +1,4 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { User } from './models/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -8,8 +7,6 @@ import { USER_REPOSITORY } from 'common/constants';
 
 @Injectable()
 export class UsersService {
-  @InjectModel(User) private readonly userModel: typeof User;
-
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
   ) {}
