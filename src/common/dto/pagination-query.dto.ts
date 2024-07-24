@@ -1,13 +1,14 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsNotEmpty, IsPositive } from 'class-validator';
 
 export class PaginationQueryDto {
-    @IsOptional()
-    @IsPositive()
-    @Type(() => Number)
-    page: number;
-    @IsOptional()
-    @IsPositive()
-    @Type(() => Number)
-    perPage: number;
+  @IsPositive()
+  @IsNotEmpty()
+  @Type(() => Number)
+  page: number;
+
+  @IsPositive()
+  @IsNotEmpty()
+  @Type(() => Number)
+  perPage: number;
 }

@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migrate:up": "ts-node -r tsconfig-paths/register src/config/umzug.ts up",
+    "migrate:create": "ts-node -r tsconfig-paths/register src/config/umzug.ts create --name"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -26,15 +28,24 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "^2.0.5",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/sequelize": "^10.0.1",
     "@nestjs/typeorm": "^10.0.2",
+    "@ngneat/falso": "^7.2.0",
     "@types/hapi__joi": "^17.1.14",
+    "argon2": "^0.40.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dotenv": "^16.4.5",
     "eslint": "^8.56.0",
+    "joi": "^17.13.3",
+    "node-gyp": "^10.2.0",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20"
+    "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6",
+    "typeorm": "^0.3.20",
+    "umzug": "^3.8.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

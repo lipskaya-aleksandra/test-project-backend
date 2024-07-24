@@ -1,47 +1,60 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { User } from './models/user.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
+import { USER_REPOSITORY } from 'common/constants';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
-    ) {}
-    getAll(paginationQuery: PaginationQueryDto) {
-        const { page, perPage } = paginationQuery;
-        return this.userRepository.find({
-            skip: page * perPage,
-            take: perPage,
-        });
+  @InjectModel(User) private readonly userModel: typeof User;
+
+  constructor(
+    @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
+  ) {}
+
+  getAll(paginationQuery: PaginationQueryDto) {
+    const { page, perPage } = paginationQuery;
+
+    const users = this.userRepository.findAll({
+      offset: (page - 1) * perPage,
+      limit: perPage,
+    });
+
+    return users;
+  }
+
+  async getById(id: number) {
+    const user = await this.userRepository.findByPk(id);
+    if (!user) {
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-    async getById(id: string) {
-        const user = await this.userRepository.findOneBy({ id: +id });
-        if (!user) {
-            throw new NotFoundException(`User with id ${id} not found`);
-        }
-        return user;
+    return user;
+  }
+
+  create(createUserDto: CreateUserDto) {
+    const user = this.userRepository.create(createUserDto);
+    return user;
+  }
+
+  async edit(id: number, updateUserDto: UpdateUserDto) {
+    const [numberOfAffectedRows, [updatedUser]] =
+      await this.userRepository.update(updateUserDto, {
+        where: { id },
+        returning: true,
+      });
+
+    if (numberOfAffectedRows === 0) {
+      throw new NotFoundException(`User with id ${id} not found`);
     }
-    create(createUserDto: CreateUserDto) {
-        const user = this.userRepository.create(createUserDto);
-        return this.userRepository.save(user);
-    }
-    async edit(id: string, updateUserDto: UpdateUserDto) {
-        const user = await this.userRepository.preload({
-            id: +id,
-            ...updateUserDto,
-        });
-        if (!user) {
-            throw new NotFoundException('User with id ${id} not found');
-        }
-        return this.userRepository.save(user);
-    }
-    async delete(id: string) {
-        const user = await this.getById(id);
-        return this.userRepository.remove(user);
-    }
+
+    return updatedUser;
+  }
+
+  async delete(id: number) {
+    const user = await this.getById(id);
+
+    await user.destroy();
+  }
 }
