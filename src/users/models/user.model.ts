@@ -1,3 +1,4 @@
+import { Sequelize } from 'sequelize';
 import {
   Table,
   Column,
@@ -5,9 +6,27 @@ import {
   DataType,
   PrimaryKey,
   AutoIncrement,
+  DefaultScope,
+  ForeignKey,
 } from 'sequelize-typescript';
+import { Role } from './role.model';
 
-@Table({ tableName: 'Users', updatedAt: false })
+// @DefaultScope(() => ({
+//   attributes: {
+//     include: [
+//       [
+//         Sequelize.fn(
+//           'CONCAT',
+//           Sequelize.col('firstName'),
+//           ' ',
+//           Sequelize.col('lastName'),
+//         ),
+//         'fullName',
+//       ],
+//     ],
+//   },
+// }))
+@Table({ tableName: 'Users' })
 export class User extends Model<User> {
   @PrimaryKey
   @AutoIncrement
@@ -32,8 +51,27 @@ export class User extends Model<User> {
   })
   email: string;
 
+  @Column(DataType.VIRTUAL)
+  fullName: string;
+
   @Column({
     type: DataType.STRING,
   })
   password: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  status: string;
 }
+
+export const sortableUserProps = [
+  'id',
+  'email',
+  'firstName',
+  'lastName',
+  'createdAt',
+  'updatedAt',
+] as const;
+
+export const filterableUserProps = ['role', 'status', 'id', 'email'] as const;

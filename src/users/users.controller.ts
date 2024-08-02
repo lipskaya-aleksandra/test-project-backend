@@ -16,15 +16,36 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
 import { OutputUserDto } from './dto/output-user.dto';
 import { TransformInterceptor } from '../common/interceptors/plain-to-class.interceptor';
+import { FilterQueryDto } from 'common/dto/filter-query.dto';
+import { SortQueryDto } from 'common/dto/sort-query.dto';
+import { SortParams } from 'common/decorators/sort-params.decorator';
+import { FilterParams } from 'common/decorators/filter-params.decorator';
+import { filterableUserProps, sortableUserProps } from './models/user.model';
+import { PaginatedOutputUserDto } from './dto/paginated-output-user.dto';
+import { WhereOptions } from 'sequelize';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseInterceptors(new TransformInterceptor(OutputUserDto))
+  @UseInterceptors(new TransformInterceptor(PaginatedOutputUserDto))
   @Get()
-  getAll(@Query() paginationQuery: PaginationQueryDto) {
-    const users = this.usersService.getAll(paginationQuery);
+  getAll(
+    @Query() paginationQuery: PaginationQueryDto,
+    @FilterParams(filterableUserProps)
+    filtersWhere?: WhereOptions,
+    //filterQueries?: FilterQueryDto[],
+    @SortParams(sortableUserProps)
+    sortQuery?: SortQueryDto,
+    @Query('search') searchTerm?: string,
+  ) {
+    const users = this.usersService.getAll({
+      paginationQuery,
+      //filterQueries,
+      filtersWhere,
+      sortQuery,
+      searchTerm,
+    });
 
     return users;
   }
@@ -54,5 +75,11 @@ export class UsersController {
   @Delete(':id')
   deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.delete(id);
+  }
+
+  @Delete()
+  deleteManyUsers(@Body() ids: number[]) {
+    console.log(ids);
+    return this.usersService.deleteMany(ids);
   }
 }

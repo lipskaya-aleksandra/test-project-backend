@@ -1,12 +1,17 @@
 import { IsNotEmpty, IsString, IsEmail, IsDate } from 'class-validator';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 @Exclude()
 export class OutputUserDto {
   @Expose()
   @IsString()
   @IsNotEmpty()
-  readonly id: string;
+  readonly id: number;
+
+  @Expose({ name: 'fullName' })
+  getFullName() {
+    return [this.firstName, this.lastName].filter(Boolean).join(' ');
+  }
 
   @Expose()
   @IsEmail()
@@ -24,4 +29,15 @@ export class OutputUserDto {
   @Expose()
   @IsDate()
   readonly createdAt: Date;
+
+  @Transform(({ obj }) => (obj.role ? obj.role.name : null), {
+    toClassOnly: true,
+  })
+  @Expose()
+  @IsString()
+  readonly role?: string;
+
+  @Expose()
+  @IsString()
+  readonly status?: string;
 }
