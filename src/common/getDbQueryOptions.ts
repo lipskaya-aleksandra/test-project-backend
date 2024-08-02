@@ -14,13 +14,8 @@ export default function getDbQueryOptions(
       ? [[sortQuery.property, sortQuery.direction]]
       : [['id', 'asc']],
     where: filtersWhere,
-    // {
-    //   ...filtersWhere,
-    //   [Op.or]: searchFields.map((field) => ({
-    //     [field]: { [Op.like]: `%${searchTerm}%` },
-    //   })),
-    // },
   };
+
   if (searchTerm) {
     options.where = {
       ...options.where,

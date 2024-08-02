@@ -59,6 +59,16 @@ export class User extends Model<User> {
   })
   password: string;
 
+  @ForeignKey(() => Role)
+  @Column({
+    type: DataType.STRING,
+    references: {
+      model: Role,
+      key: 'id',
+    },
+  })
+  roleId: string;
+
   @Column({
     type: DataType.STRING,
   })
