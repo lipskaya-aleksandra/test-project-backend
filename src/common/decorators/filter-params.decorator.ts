@@ -1,11 +1,7 @@
-import {
-  BadRequestException,
-  createParamDecorator,
-  ExecutionContext,
-} from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { FilterQueryDto } from 'common/dto/filter-query.dto';
 import { Request } from 'express';
-import { Op } from 'sequelize';
+import { IncludeOptions, Op } from 'sequelize';
 
 const ruleMap = {
   eq: (filter: FilterQueryDto) => ({ [filter.property]: filter.value }),
@@ -67,13 +63,21 @@ export function getWhere(filters: FilterQueryDto[]) {
   return where;
 }
 
+type FilterParams = {
+  validParams: readonly string[];
+  referenceParamsMap?: {
+    filter: string;
+    mapFilter: (values: string[]) => IncludeOptions;
+  }[];
+};
+
 export const FilterParams = createParamDecorator(
-  (validParams: readonly string[], ctx: ExecutionContext): FilterQueryDto[] => {
+  (filterParams: FilterParams, ctx: ExecutionContext) => {
     const req: Request = ctx.switchToHttp().getRequest();
     const query = req.query;
     const where: any = {};
 
-    validParams.forEach((filter) => {
+    filterParams.validParams.forEach((filter) => {
       if (query[filter]) {
         const values = Array.isArray(query[filter])
           ? query[filter]
@@ -82,7 +86,18 @@ export const FilterParams = createParamDecorator(
       }
     });
 
-    return where;
+    const include = filterParams.referenceParamsMap
+      ?.map((refMap) => {
+        if (query[refMap.filter]) {
+          const values = Array.isArray(query[refMap.filter])
+            ? query[refMap.filter]
+            : [query[refMap.filter]];
+          return refMap.mapFilter(values as string[]);
+        }
+      })
+      .filter((f) => !!f);
+
+    return { where, include };
     // let inputFilterArr: string[];
 
     // if (typeof filter === 'string') inputFilterArr = [filter];

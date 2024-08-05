@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize';
+import { BelongsToSetAssociationMixin, IncludeOptions, Op } from 'sequelize';
 import {
   Table,
   Column,
@@ -6,26 +6,17 @@ import {
   DataType,
   PrimaryKey,
   AutoIncrement,
-  DefaultScope,
   ForeignKey,
+  Scopes,
+  BelongsTo,
 } from 'sequelize-typescript';
-import { Role } from './role.model';
+import { Role } from '../../roles/entities/role.entity';
 
-// @DefaultScope(() => ({
-//   attributes: {
-//     include: [
-//       [
-//         Sequelize.fn(
-//           'CONCAT',
-//           Sequelize.col('firstName'),
-//           ' ',
-//           Sequelize.col('lastName'),
-//         ),
-//         'fullName',
-//       ],
-//     ],
-//   },
-// }))
+@Scopes(() => ({
+  withRole: {
+    include: { model: Role /*  attributes: ['name', 'id']  */ },
+  },
+}))
 @Table({ tableName: 'Users' })
 export class User extends Model<User> {
   @PrimaryKey
@@ -59,20 +50,18 @@ export class User extends Model<User> {
   })
   password: string;
 
-  @ForeignKey(() => Role)
-  @Column({
-    type: DataType.STRING,
-    references: {
-      model: Role,
-      key: 'id',
-    },
-  })
-  roleId: string;
-
   @Column({
     type: DataType.STRING,
   })
   status: string;
+
+  @ForeignKey(() => Role)
+  roleId: number;
+
+  @BelongsTo(() => Role, 'roleId')
+  role: Role;
+
+  setRole: BelongsToSetAssociationMixin<Role, User['roleId']>;
 }
 
 export const sortableUserProps = [
@@ -84,4 +73,19 @@ export const sortableUserProps = [
   'updatedAt',
 ] as const;
 
-export const filterableUserProps = ['role', 'status', 'id', 'email'] as const;
+export const filterableUserProps = ['status', 'id', 'email'] as const;
+
+export const referenceFilterParamsMap = [
+  {
+    filter: 'role',
+    mapFilter: (values: string[]): IncludeOptions => {
+      console.log(values);
+      return {
+        model: Role,
+        where: {
+          name: { [Op.in]: values },
+        },
+      };
+    },
+  },
+];

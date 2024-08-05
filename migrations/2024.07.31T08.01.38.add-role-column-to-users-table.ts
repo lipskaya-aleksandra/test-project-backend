@@ -1,7 +1,6 @@
 import { Migration } from 'config/umzug';
 
 import { DataTypes } from 'sequelize';
-import { Role } from 'users/models/role.model';
 
 export const up: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
@@ -9,15 +8,15 @@ export const up: Migration = async ({ context }) => {
       'Users',
       'roleId',
       {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         references: {
-          model: Role,
+          model: 'Roles',
           key: 'id',
         },
+        onDelete: 'SET NULL',
+        allowNull: true,
       },
-      {
-        transaction,
-      },
+      { transaction },
     );
   });
 };

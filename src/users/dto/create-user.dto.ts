@@ -1,4 +1,6 @@
+import { Type } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { RoleReferenceDto } from 'roles/dto/reference-role.dto';
 
 export class CreateUserDto {
   @IsString()
@@ -16,7 +18,7 @@ export class CreateUserDto {
   @IsOptional()
   password?: string;
 
-  @IsString()
   @IsOptional()
-  role?: string;
+  @Type(() => RoleReferenceDto)
+  role?: RoleReferenceDto;
 }

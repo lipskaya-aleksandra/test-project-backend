@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { User } from './models/user.model';
+import { omit } from 'lodash';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { USER_REPOSITORY } from 'common/constants';
@@ -20,13 +21,17 @@ export class UsersService {
       'email',
     ]);
 
-    const users = await this.userRepository.findAndCountAll(options);
+    console.log(options);
+
+    const users = await this.userRepository
+      .scope('withRole')
+      .findAndCountAll(options);
 
     return users;
   }
 
   async getById(id: number) {
-    const user = await this.userRepository.findByPk(id);
+    const user = await this.userRepository.scope('withRole').findByPk(id);
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
@@ -34,19 +39,21 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create(createUserDto);
+    const user = await this.userRepository.create(omit(createUserDto, 'role'));
+    await user.setRole(createUserDto.role.id);
 
     return user;
   }
 
   async edit(id: number, updateUserDto: UpdateUserDto) {
-    console.log({ updateUserDto });
-
-    const [numberOfAffectedRows, updatedUser] =
-      await this.userRepository.update(updateUserDto, {
+    const [numberOfAffectedRows, [updatedUser]] =
+      await this.userRepository.update(omit(updateUserDto, 'role'), {
         where: { id },
         returning: true,
       });
+
+    if (updatedUser && updateUserDto.role)
+      await updatedUser.setRole(updateUserDto.role.id);
 
     if (!numberOfAffectedRows) {
       throw new NotFoundException(`User with id ${id} not found`);

@@ -13,7 +13,7 @@ export default function getDbQueryOptions(
     order: sortQuery
       ? [[sortQuery.property, sortQuery.direction]]
       : [['id', 'asc']],
-    where: filtersWhere,
+    ...filtersWhere,
   };
 
   if (searchTerm) {

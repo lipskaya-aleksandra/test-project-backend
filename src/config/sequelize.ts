@@ -1,8 +1,8 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
-import { User } from 'users/models/user.model';
-import { Role } from 'users/models/role.model';
+import { User } from 'users/entities/user.entity';
+import { Role } from 'roles/entities/role.entity';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 

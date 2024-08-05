@@ -16,13 +16,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
 import { OutputUserDto } from './dto/output-user.dto';
 import { TransformInterceptor } from '../common/interceptors/plain-to-class.interceptor';
-import { FilterQueryDto } from 'common/dto/filter-query.dto';
 import { SortQueryDto } from 'common/dto/sort-query.dto';
 import { SortParams } from 'common/decorators/sort-params.decorator';
 import { FilterParams } from 'common/decorators/filter-params.decorator';
-import { filterableUserProps, sortableUserProps } from './models/user.model';
+import {
+  filterableUserProps,
+  referenceFilterParamsMap,
+  sortableUserProps,
+} from './entities/user.entity';
 import { PaginatedOutputUserDto } from './dto/paginated-output-user.dto';
 import { WhereOptions } from 'sequelize';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('users')
 export class UsersController {
@@ -32,7 +36,10 @@ export class UsersController {
   @Get()
   getAll(
     @Query() paginationQuery: PaginationQueryDto,
-    @FilterParams(filterableUserProps)
+    @FilterParams({
+      validParams: filterableUserProps,
+      referenceParamsMap: referenceFilterParamsMap,
+    })
     filtersWhere?: WhereOptions,
     //filterQueries?: FilterQueryDto[],
     @SortParams(sortableUserProps)
@@ -52,8 +59,10 @@ export class UsersController {
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))
   @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getById(id);
+  async getUserById(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.usersService.getById(id);
+    console.log(plainToInstance(OutputUserDto, user));
+    return user;
   }
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))

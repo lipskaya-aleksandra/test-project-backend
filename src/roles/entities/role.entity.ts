@@ -7,7 +7,7 @@ import {
   AutoIncrement,
 } from 'sequelize-typescript';
 
-@Table({ tableName: 'Roles' })
+@Table({ tableName: 'Roles', timestamps: false })
 export class Role extends Model<Role> {
   @PrimaryKey
   @AutoIncrement
