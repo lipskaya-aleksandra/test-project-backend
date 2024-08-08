@@ -56,7 +56,7 @@ export class UsersService {
       });
 
     if (updatedUser && updateUserDto.job)
-      await updatedUser.setJob(updateUserDto.job.id);
+      await this._editJob(updateUserDto.job.id, updatedUser);
 
     if (!numberOfAffectedRows) {
       throw new NotFoundException(`User with id ${id} not found`);
@@ -65,9 +65,13 @@ export class UsersService {
     return updatedUser;
   }
 
+  private async _editJob(id: number, user: User) {
+    await user.setJob(id);
+  }
+
   async editJob(id: number, updateUserJobDto: UpdateUserJobDto) {
     const user = await this.getById(id);
-    await user.setJob(updateUserJobDto.id);
+    await this._editJob(updateUserJobDto.id, user);
 
     return user;
   }
