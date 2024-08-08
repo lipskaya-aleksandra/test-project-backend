@@ -1,6 +1,5 @@
 import { FindAndCountOptions, Op } from 'sequelize';
 import { QueryObj } from './QueryObjType';
-import { merge } from 'lodash';
 
 export default function getDbQueryOptions(
   query: QueryObj,
@@ -23,13 +22,16 @@ export default function getDbQueryOptions(
   };
 
   if (searchTerm) {
-    merge(options.where, {
-      where: {
-        [Op.or]: searchFields.map((field) => ({
-          [field]: { [Op.like]: `%${searchTerm}%` },
-        })),
-      },
-    });
+    const searchOptions = searchFields.map((field) => ({
+      [field]: { [Op.like]: `%${searchTerm}%` },
+    }));
+    options.where = {
+      ...options.where,
+      [Op.or]: options.where[Op.or]
+        ? [...options.where[Op.or], ...searchOptions]
+        : searchOptions,
+    };
   }
+
   return options;
 }
