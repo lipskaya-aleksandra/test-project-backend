@@ -26,7 +26,7 @@ import {
 } from './entities/user.entity';
 import { PaginatedOutputUserDto } from './dto/paginated-output-user.dto';
 import { WhereOptions } from 'sequelize';
-import { plainToInstance } from 'class-transformer';
+import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 
 @Controller('users')
 export class UsersController {
@@ -61,7 +61,7 @@ export class UsersController {
   @Get(':id')
   async getUserById(@Param('id', ParseIntPipe) id: number) {
     const user = await this.usersService.getById(id);
-    console.log(plainToInstance(OutputUserDto, user));
+
     return user;
   }
 
@@ -78,6 +78,15 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.edit(id, updateUserDto);
+  }
+
+  @UseInterceptors(new TransformInterceptor(OutputUserDto))
+  @Patch(':id/role')
+  editUserRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserRoleDto: UpdateUserJobDto,
+  ) {
+    return this.usersService.editJob(id, updateUserRoleDto);
   }
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))

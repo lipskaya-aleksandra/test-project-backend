@@ -1,12 +1,18 @@
 import { FindAndCountOptions, Op } from 'sequelize';
 import { QueryObj } from './QueryObjType';
+import { merge } from 'lodash';
 
 export default function getDbQueryOptions(
   query: QueryObj,
   searchFields: string[],
 ): FindAndCountOptions {
-  const { paginationQuery, searchTerm, sortQuery, filtersWhere } = query;
-  const { page, perPage } = paginationQuery;
+  const {
+    paginationQuery: { page, perPage },
+    searchTerm,
+    sortQuery,
+    filtersWhere,
+  } = query;
+
   const options: FindAndCountOptions = {
     offset: (page - 1) * perPage,
     limit: perPage,
@@ -17,12 +23,13 @@ export default function getDbQueryOptions(
   };
 
   if (searchTerm) {
-    options.where = {
-      ...options.where,
-      [Op.or]: searchFields.map((field) => ({
-        [field]: { [Op.like]: `%${searchTerm}%` },
-      })),
-    };
+    merge(options.where, {
+      where: {
+        [Op.or]: searchFields.map((field) => ({
+          [field]: { [Op.like]: `%${searchTerm}%` },
+        })),
+      },
+    });
   }
   return options;
 }

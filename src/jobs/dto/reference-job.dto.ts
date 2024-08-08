@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class RoleReferenceDto {
+export class JobReferenceDto {
   @IsString()
   @IsNotEmpty()
   name: string;

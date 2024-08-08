@@ -1,14 +1,7 @@
 import { IsNotEmpty, IsString, IsEmail, IsDate } from 'class-validator';
-import {
-  Exclude,
-  Expose,
-  plainToClass,
-  plainToInstance,
-  Type,
-} from 'class-transformer';
-import { RoleOutputDto } from 'roles/dto/output-role.dto';
+import { Expose, Type } from 'class-transformer';
+import { JobOutputDto } from 'jobs/dto/output-job.dto';
 
-@Exclude()
 export class OutputUserDto {
   @Expose()
   @IsString()
@@ -38,13 +31,8 @@ export class OutputUserDto {
   readonly createdAt: Date;
 
   @Expose()
-  @Type(() => RoleOutputDto)
-  readonly role?: RoleOutputDto;
-
-  // @Expose({ name: 'roleDto' })
-  // getRole() {
-  //   return plainToInstance(RoleOutputDto, this.role);
-  // }
+  @Type(() => JobOutputDto)
+  readonly job?: JobOutputDto;
 
   @Expose()
   @IsString()

@@ -1,20 +1,19 @@
-import { Migration } from 'config/umzug';
-
+import { Migration } from 'config/umzug/dbMigrations';
 import { DataTypes } from 'sequelize';
 
 export const up: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
-    await context.addColumn(
-      'Users',
-      'roleId',
+    await context.createTable(
+      'Jobs',
       {
-        type: DataTypes.INTEGER,
-        references: {
-          model: 'Roles',
-          key: 'id',
+        id: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
         },
-        onDelete: 'SET NULL',
-        allowNull: true,
+        name: {
+          type: DataTypes.STRING,
+        },
       },
       { transaction },
     );
@@ -23,8 +22,6 @@ export const up: Migration = async ({ context }) => {
 
 export const down: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
-    await context.removeColumn('Users', 'roleId', {
-      transaction,
-    });
+    await context.dropTable('Jobs', { transaction });
   });
 };

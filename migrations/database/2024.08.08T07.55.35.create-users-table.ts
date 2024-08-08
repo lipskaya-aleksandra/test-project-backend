@@ -1,6 +1,5 @@
+import { Migration } from 'config/umzug/dbMigrations';
 import { DataTypes } from 'sequelize';
-
-import { Migration } from 'config/umzug';
 
 export const up: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
@@ -29,6 +28,22 @@ export const up: Migration = async ({ context }) => {
           type: DataTypes.DATE,
           allowNull: false,
           defaultValue: new Date(),
+        },
+        updatedAt: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: new Date(),
+        },
+        status: {
+          type: DataTypes.STRING,
+        },
+        jobId: {
+          type: DataTypes.INTEGER,
+          references: {
+            model: 'Jobs',
+            key: 'id',
+          },
+          allowNull: true,
         },
       },
       { transaction },

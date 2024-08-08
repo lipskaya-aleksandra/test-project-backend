@@ -1,3 +1,4 @@
+import { Job } from 'jobs/entities/job.entity';
 import { BelongsToSetAssociationMixin, IncludeOptions, Op } from 'sequelize';
 import {
   Table,
@@ -10,11 +11,10 @@ import {
   Scopes,
   BelongsTo,
 } from 'sequelize-typescript';
-import { Role } from '../../roles/entities/role.entity';
 
 @Scopes(() => ({
-  withRole: {
-    include: { model: Role /*  attributes: ['name', 'id']  */ },
+  withJob: {
+    include: { model: Job },
   },
 }))
 @Table({ tableName: 'Users' })
@@ -55,13 +55,13 @@ export class User extends Model<User> {
   })
   status: string;
 
-  @ForeignKey(() => Role)
-  roleId: number;
+  @ForeignKey(() => Job)
+  jobId: number;
 
-  @BelongsTo(() => Role, 'roleId')
-  role: Role;
+  @BelongsTo(() => Job, 'jobId')
+  job: Job;
 
-  setRole: BelongsToSetAssociationMixin<Role, User['roleId']>;
+  setJob: BelongsToSetAssociationMixin<Job, User['jobId']>;
 }
 
 export const sortableUserProps = [
@@ -73,15 +73,14 @@ export const sortableUserProps = [
   'updatedAt',
 ] as const;
 
-export const filterableUserProps = ['status', 'id', 'email'] as const;
+export const filterableUserProps = ['status'] as const;
 
 export const referenceFilterParamsMap = [
   {
-    filter: 'role',
+    filter: 'job',
     mapFilter: (values: string[]): IncludeOptions => {
-      console.log(values);
       return {
-        model: Role,
+        model: Job,
         where: {
           name: { [Op.in]: values },
         },

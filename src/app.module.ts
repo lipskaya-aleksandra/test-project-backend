@@ -3,8 +3,8 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { RolesModule } from './roles/roles.module';
 import sequelizeConfig from './config/sequelize';
+import { JobsModule } from 'jobs/jobs.module';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import sequelizeConfig from './config/sequelize';
 
     UsersModule,
 
-    RolesModule,
+    JobsModule,
   ],
   controllers: [],
   providers: [],

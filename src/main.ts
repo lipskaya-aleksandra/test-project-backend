@@ -17,12 +17,12 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalInterceptors(
-    new ClassSerializerInterceptor(app.get(Reflector), {
-      strategy: 'excludeAll',
-      excludeExtraneousValues: true,
-    }),
-  );
+  // app.useGlobalInterceptors(
+  //   new ClassSerializerInterceptor(app.get(Reflector), {
+  //     strategy: 'exposeAll',
+  //     excludeExtraneousValues: true,
+  //   }),
+  // );
 
   await app.listen(3000);
 }
