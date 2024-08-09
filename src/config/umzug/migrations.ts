@@ -8,14 +8,14 @@ const sequelize = new Sequelize(sequelizeConfig);
 
 const umzug = new Umzug<QueryInterface>({
   migrations: {
-    glob: 'migrations/database/*.ts',
+    glob: 'database/migrations/*.ts',
   },
   storage: new SequelizeStorage({ sequelize }),
   context: sequelize.getQueryInterface(),
   logger: console,
 
   create: {
-    folder: path.join(process.cwd(), '/migrations/database'),
+    folder: path.join(process.cwd(), '/database/migrations'),
   },
 });
 

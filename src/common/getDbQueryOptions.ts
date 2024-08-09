@@ -9,7 +9,7 @@ export default function getDbQueryOptions(
     paginationQuery: { page, perPage },
     searchTerm,
     sortQuery,
-    filtersWhere,
+    filters,
   } = query;
 
   const options: FindAndCountOptions = {
@@ -18,7 +18,7 @@ export default function getDbQueryOptions(
     order: sortQuery
       ? [[sortQuery.property, sortQuery.direction]]
       : [['id', 'asc']],
-    ...filtersWhere,
+    ...filters,
   };
 
   if (searchTerm) {

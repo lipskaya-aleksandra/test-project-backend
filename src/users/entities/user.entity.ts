@@ -1,3 +1,4 @@
+import { FilterParams } from 'common/decorators/filter-params.decorator';
 import { Job } from 'jobs/entities/job.entity';
 import { BelongsToSetAssociationMixin, IncludeOptions, Op } from 'sequelize';
 import {
@@ -75,9 +76,9 @@ export const sortableUserProps = [
 
 export const filterableUserProps = ['status'] as const;
 
-export const referenceFilterParamsMap = [
+export const referenceFilterParamsMap: FilterParams['referenceParamsMap'] = [
   {
-    filter: 'job',
+    key: 'job',
     mapFilter: (values: string[]): IncludeOptions => {
       return {
         model: Job,

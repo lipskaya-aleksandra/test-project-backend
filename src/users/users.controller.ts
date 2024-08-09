@@ -37,19 +37,17 @@ export class UsersController {
   getAll(
     @Query() paginationQuery: PaginationQueryDto,
     @FilterParams({
-      validParams: filterableUserProps,
+      accept: filterableUserProps,
       referenceParamsMap: referenceFilterParamsMap,
     })
-    filtersWhere?: WhereOptions,
-    //filterQueries?: FilterQueryDto[],
+    filters?: WhereOptions,
     @SortParams(sortableUserProps)
     sortQuery?: SortQueryDto,
     @Query('search') searchTerm?: string,
   ) {
     const users = this.usersService.getAll({
       paginationQuery,
-      //filterQueries,
-      filtersWhere,
+      filters,
       sortQuery,
       searchTerm,
     });
@@ -81,7 +79,7 @@ export class UsersController {
   }
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))
-  @Patch(':id/role')
+  @Patch(':id/job')
   editUserRole(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserRoleDto: UpdateUserJobDto,

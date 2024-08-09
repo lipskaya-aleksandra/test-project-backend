@@ -18,12 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:database:up": "ts-node -r tsconfig-paths/register src/config/umzug/dbMigrations.ts up",
-    "migrate:database:down": "ts-node -r tsconfig-paths/register src/config/umzug/dbMigrations.ts down",
-    "migrate:database:create": "ts-node -r tsconfig-paths/register src/config/umzug/dbMigrations.ts create --name",
-    "migrate:seeders:up": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts up",
-    "migrate:seeders:down": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts down",
-    "migrate:seeders:create": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts create --name"
+    "migrations:up": "ts-node -r tsconfig-paths/register src/config/umzug/migrations.ts up",
+    "migrations:down": "ts-node -r tsconfig-paths/register src/config/umzug/migrations.ts down",
+    "migrations:create": "ts-node -r tsconfig-paths/register src/config/umzug/migrations.ts create --name",
+    "seeders:up": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts up",
+    "seeders:down": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts down",
+    "seeders:create": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts create --name"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",

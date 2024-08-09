@@ -3,11 +3,11 @@ import { omit } from 'lodash';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { USER_REPOSITORY } from 'common/constants';
 
 import { QueryObj } from 'common/QueryObjType';
 import getDbQueryOptions from 'common/getDbQueryOptions';
 import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
+import { USER_REPOSITORY } from './constants';
 
 @Injectable()
 export class UsersService {
@@ -21,8 +21,6 @@ export class UsersService {
       'lastName',
       'email',
     ]);
-
-    console.log(options);
 
     const users = await this.userRepository
       .scope('withJob')

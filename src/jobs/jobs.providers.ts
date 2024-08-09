@@ -1,4 +1,4 @@
-import { JOB_REPOSITORY } from 'common/constants';
+import { JOB_REPOSITORY } from './constants';
 import { Job } from './entities/job.entity';
 
 export const jobsProviders = [

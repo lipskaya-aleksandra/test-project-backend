@@ -1,4 +1,4 @@
-import { Migration } from 'config/umzug/dbMigrations';
+import { Migration } from 'config/umzug/migrations';
 import { DataTypes } from 'sequelize';
 
 export const up: Migration = async ({ context }) => {
@@ -20,6 +20,7 @@ export const up: Migration = async ({ context }) => {
         email: {
           type: DataTypes.STRING,
           allowNull: false,
+          unique: true,
         },
         password: {
           type: DataTypes.STRING,
