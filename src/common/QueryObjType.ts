@@ -4,7 +4,7 @@ import { SortQueryDto } from './dto/sort-query.dto';
 
 export type QueryObj = {
   paginationQuery: PaginationQueryDto;
-  filtersWhere?: WhereOptions;
+  filters?: WhereOptions;
   sortQuery?: SortQueryDto;
   searchTerm?: string;
 };

@@ -1,21 +1,21 @@
 import { SequelizeStorage, Umzug } from 'umzug';
-import sequelizeConfig from './sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { QueryInterface } from 'sequelize';
 import * as path from 'path';
+import sequelizeConfig from 'config/sequelize';
 
 const sequelize = new Sequelize(sequelizeConfig);
 
 const umzug = new Umzug<QueryInterface>({
   migrations: {
-    glob: 'migrations/*.ts',
+    glob: 'database/migrations/*.ts',
   },
   storage: new SequelizeStorage({ sequelize }),
   context: sequelize.getQueryInterface(),
   logger: console,
 
   create: {
-    folder: path.join(process.cwd(), '/migrations'),
+    folder: path.join(process.cwd(), '/database/migrations'),
   },
 });
 

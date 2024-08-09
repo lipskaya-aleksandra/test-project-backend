@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, IsEmail, IsDate } from 'class-validator';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
+import { JobOutputDto } from 'jobs/dto/output-job.dto';
 
-@Exclude()
 export class OutputUserDto {
   @Expose()
   @IsString()
@@ -30,12 +30,9 @@ export class OutputUserDto {
   @IsDate()
   readonly createdAt: Date;
 
-  @Transform(({ obj }) => (obj.role ? obj.role.name : null), {
-    toClassOnly: true,
-  })
   @Expose()
-  @IsString()
-  readonly role?: string;
+  @Type(() => JobOutputDto)
+  readonly job?: JobOutputDto;
 
   @Expose()
   @IsString()

@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { SequelizeModule } from '@nestjs/sequelize';
 import sequelizeConfig from './config/sequelize';
+import { JobsModule } from 'jobs/jobs.module';
 
 @Module({
   imports: [
@@ -19,6 +20,8 @@ import sequelizeConfig from './config/sequelize';
     SequelizeModule.forRoot(sequelizeConfig),
 
     UsersModule,
+
+    JobsModule,
   ],
   controllers: [],
   providers: [],

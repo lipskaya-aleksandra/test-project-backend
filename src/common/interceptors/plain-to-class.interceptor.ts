@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 
 interface ClassType<T> {
   new (): T;
@@ -17,11 +17,12 @@ export class TransformInterceptor<T> implements NestInterceptor<Partial<T>, T> {
   constructor(private readonly classType: ClassType<T>) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<T> {
-    return next.handle().pipe(
-      map(
-        // (data) => instanceToPlain(plainToInstance(this.classType, data)) as T,
-        (data) => plainToInstance(this.classType, data),
-      ),
-    );
+    return next
+      .handle()
+      .pipe(
+        map((data) =>
+          plainToInstance(this.classType, data, { strategy: 'excludeAll' }),
+        ),
+      );
   }
 }

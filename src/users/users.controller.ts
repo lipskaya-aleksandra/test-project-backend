@@ -16,13 +16,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
 import { OutputUserDto } from './dto/output-user.dto';
 import { TransformInterceptor } from '../common/interceptors/plain-to-class.interceptor';
-import { FilterQueryDto } from 'common/dto/filter-query.dto';
 import { SortQueryDto } from 'common/dto/sort-query.dto';
 import { SortParams } from 'common/decorators/sort-params.decorator';
 import { FilterParams } from 'common/decorators/filter-params.decorator';
-import { filterableUserProps, sortableUserProps } from './models/user.model';
+import {
+  filterableUserProps,
+  referenceFilterParamsMap,
+  sortableUserProps,
+} from './entities/user.entity';
 import { PaginatedOutputUserDto } from './dto/paginated-output-user.dto';
 import { WhereOptions } from 'sequelize';
+import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 
 @Controller('users')
 export class UsersController {
@@ -32,17 +36,18 @@ export class UsersController {
   @Get()
   getAll(
     @Query() paginationQuery: PaginationQueryDto,
-    @FilterParams(filterableUserProps)
-    filtersWhere?: WhereOptions,
-    //filterQueries?: FilterQueryDto[],
+    @FilterParams({
+      accept: filterableUserProps,
+      referenceParamsMap: referenceFilterParamsMap,
+    })
+    filters?: WhereOptions,
     @SortParams(sortableUserProps)
     sortQuery?: SortQueryDto,
     @Query('search') searchTerm?: string,
   ) {
     const users = this.usersService.getAll({
       paginationQuery,
-      //filterQueries,
-      filtersWhere,
+      filters,
       sortQuery,
       searchTerm,
     });
@@ -52,8 +57,10 @@ export class UsersController {
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))
   @Get(':id')
-  getUserById(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.getById(id);
+  async getUserById(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.usersService.getById(id);
+
+    return user;
   }
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))
@@ -69,6 +76,15 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.edit(id, updateUserDto);
+  }
+
+  @UseInterceptors(new TransformInterceptor(OutputUserDto))
+  @Patch(':id/job')
+  editUserRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUserRoleDto: UpdateUserJobDto,
+  ) {
+    return this.usersService.editJob(id, updateUserRoleDto);
   }
 
   @UseInterceptors(new TransformInterceptor(OutputUserDto))

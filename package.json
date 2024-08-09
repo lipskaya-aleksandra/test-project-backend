@@ -18,9 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migrate:up": "ts-node -r tsconfig-paths/register src/config/umzug.ts up",
-    "migrate:down": "ts-node -r tsconfig-paths/register src/config/umzug.ts down",
-    "migrate:create": "ts-node -r tsconfig-paths/register src/config/umzug.ts create --name"
+    "migrations:up": "ts-node -r tsconfig-paths/register src/config/umzug/migrations.ts up",
+    "migrations:down": "ts-node -r tsconfig-paths/register src/config/umzug/migrations.ts down",
+    "migrations:create": "ts-node -r tsconfig-paths/register src/config/umzug/migrations.ts create --name",
+    "seeders:up": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts up",
+    "seeders:down": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts down",
+    "seeders:create": "ts-node -r tsconfig-paths/register src/config/umzug/seeders.ts create --name"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
@@ -55,6 +58,7 @@
     "@nestjs/testing": "^10.0.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
+    "@types/lodash": "^4.17.7",
     "@types/node": "^20.3.1",
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",

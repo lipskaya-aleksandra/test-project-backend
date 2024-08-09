@@ -1,11 +1,7 @@
-import {
-  BadRequestException,
-  createParamDecorator,
-  ExecutionContext,
-} from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { FilterQueryDto } from 'common/dto/filter-query.dto';
 import { Request } from 'express';
-import { Op } from 'sequelize';
+import { FindOptions, IncludeOptions, Op } from 'sequelize';
 
 const ruleMap = {
   eq: (filter: FilterQueryDto) => ({ [filter.property]: filter.value }),
@@ -67,77 +63,40 @@ export function getWhere(filters: FilterQueryDto[]) {
   return where;
 }
 
+export type FilterParams = {
+  accept: readonly string[];
+  referenceParamsMap?: {
+    key: string;
+    mapFilter: (values: string[]) => IncludeOptions;
+  }[];
+};
+
 export const FilterParams = createParamDecorator(
-  (validParams: readonly string[], ctx: ExecutionContext): FilterQueryDto[] => {
+  (filterParams: FilterParams, ctx: ExecutionContext) => {
     const req: Request = ctx.switchToHttp().getRequest();
     const query = req.query;
-    const where: any = {};
+    const where: FindOptions<unknown> = {};
 
-    validParams.forEach((filter) => {
+    filterParams.accept.forEach((filter) => {
       if (query[filter]) {
         const values = Array.isArray(query[filter])
           ? query[filter]
           : [query[filter]];
+
         where[filter] = values.length > 1 ? { [Op.in]: values } : values[0];
       }
     });
 
-    return where;
-    // let inputFilterArr: string[];
+    const include = filterParams.referenceParamsMap
+      ?.filter((refMap) => !!query[refMap.key])
+      ?.map((refMap) => {
+        const values = Array.isArray(query[refMap.key])
+          ? query[refMap.key]
+          : [query[refMap.key]];
 
-    // if (typeof filter === 'string') inputFilterArr = [filter];
-    // else inputFilterArr = filter;
-    // if (!inputFilterArr) return null;
+        return refMap.mapFilter(values as string[]);
+      });
 
-    // if (typeof validParams != 'object')
-    //   throw new BadRequestException('Invalid filter parameter');
-
-    // const filtersArr: FilterQueryDto[] = inputFilterArr.map((f) => {
-    //   if (
-    //     !f.match(
-    //       /^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,.]+$/,
-    //     ) &&
-    //     !f.match(/^[a-zA-Z0-9_]+:(isnull|isnotnull)$/)
-    //   ) {
-    //     throw new BadRequestException('Invalid filter parameter format');
-    //   }
-
-    //   const [property, rule, value] = f.split(':');
-    //   if (!validParams.includes(property))
-    //     throw new BadRequestException(
-    //       `Invalid filter property: ${property}. Property should be one of the following: ${validParams}`,
-    //     );
-    //   if (!Object.keys(ruleMap).includes(rule))
-    //     throw new BadRequestException(
-    //       `Invalid filter rule: ${rule}. Rule should be one of the following: ${Object.keys(ruleMap)}`,
-    //     );
-
-    //   return { property, rule, value };
-    //});
-
-    // for (const f in inputFilterArr) {
-    //   if (
-    //     !f.match(
-    //       /^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,]+$/,
-    //     ) &&
-    //     !f.match(/^[a-zA-Z0-9_]+:(isnull|isnotnull)$/)
-    //   ) {
-    //     throw new BadRequestException('Invalid filter parameter format');
-    //   }
-
-    //   const [property, rule, value] = f.split(':');
-    //   if (!validParams.includes(property))
-    //     throw new BadRequestException(
-    //       `Invalid filter property: ${property}. Property should be one of the following: ${validParams}`,
-    //     );
-    //   if (!Object.keys(ruleMap).includes(rule))
-    //     throw new BadRequestException(
-    //       `Invalid filter rule: ${rule}. Rule should be one of the following: ${Object.keys(ruleMap)}`,
-    //     );
-
-    //   filtersArr.push({ property, rule, value });
-    // }
-
-    //return filtersArr;
+    return { where, include };
   },
 );

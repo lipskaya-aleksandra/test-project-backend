@@ -1,11 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { User } from './models/user.model';
+import { omit } from 'lodash';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { USER_REPOSITORY } from 'common/constants';
 
 import { QueryObj } from 'common/QueryObjType';
 import getDbQueryOptions from 'common/getDbQueryOptions';
+import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
+import { USER_REPOSITORY } from './constants';
 
 @Injectable()
 export class UsersService {
@@ -20,39 +22,56 @@ export class UsersService {
       'email',
     ]);
 
-    const users = await this.userRepository.findAndCountAll(options);
+    const users = await this.userRepository
+      .scope('withJob')
+      .findAndCountAll(options);
 
     return users;
   }
 
   async getById(id: number) {
-    const user = await this.userRepository.findByPk(id);
+    const user = await this.userRepository.scope('withJob').findByPk(id);
+
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
+
     return user;
   }
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create(createUserDto);
+    const user = await this.userRepository.create(omit(createUserDto, 'job'));
+    await user.setJob(createUserDto.job.id);
 
     return user;
   }
 
   async edit(id: number, updateUserDto: UpdateUserDto) {
-    console.log({ updateUserDto });
-
-    const [numberOfAffectedRows, updatedUser] =
-      await this.userRepository.update(updateUserDto, {
+    const [numberOfAffectedRows, [updatedUser]] =
+      await this.userRepository.update(omit(updateUserDto, 'job'), {
         where: { id },
         returning: true,
       });
+
+    if (updatedUser && updateUserDto.job)
+      await this._editJob(updateUserDto.job.id, updatedUser);
 
     if (!numberOfAffectedRows) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
 
     return updatedUser;
+  }
+
+  private async _editJob(id: number, user: User) {
+    await user.setJob(id);
+  }
+
+  async editJob(id: number, updateUserJobDto: UpdateUserJobDto) {
+    const user = await this.getById(id);
+    await this._editJob(updateUserJobDto.id, user);
+
+    return user;
   }
 
   async delete(id: number) {

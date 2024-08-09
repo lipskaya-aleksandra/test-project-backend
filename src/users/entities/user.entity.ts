@@ -1,4 +1,6 @@
-import { Sequelize } from 'sequelize';
+import { FilterParams } from 'common/decorators/filter-params.decorator';
+import { Job } from 'jobs/entities/job.entity';
+import { BelongsToSetAssociationMixin, IncludeOptions, Op } from 'sequelize';
 import {
   Table,
   Column,
@@ -6,26 +8,16 @@ import {
   DataType,
   PrimaryKey,
   AutoIncrement,
-  DefaultScope,
   ForeignKey,
+  Scopes,
+  BelongsTo,
 } from 'sequelize-typescript';
-import { Role } from './role.model';
 
-// @DefaultScope(() => ({
-//   attributes: {
-//     include: [
-//       [
-//         Sequelize.fn(
-//           'CONCAT',
-//           Sequelize.col('firstName'),
-//           ' ',
-//           Sequelize.col('lastName'),
-//         ),
-//         'fullName',
-//       ],
-//     ],
-//   },
-// }))
+@Scopes(() => ({
+  withJob: {
+    include: { model: Job },
+  },
+}))
 @Table({ tableName: 'Users' })
 export class User extends Model<User> {
   @PrimaryKey
@@ -63,6 +55,14 @@ export class User extends Model<User> {
     type: DataType.STRING,
   })
   status: string;
+
+  @ForeignKey(() => Job)
+  jobId: number;
+
+  @BelongsTo(() => Job, 'jobId')
+  job: Job;
+
+  setJob: BelongsToSetAssociationMixin<Job, User['jobId']>;
 }
 
 export const sortableUserProps = [
@@ -74,4 +74,18 @@ export const sortableUserProps = [
   'updatedAt',
 ] as const;
 
-export const filterableUserProps = ['role', 'status', 'id', 'email'] as const;
+export const filterableUserProps = ['status'] as const;
+
+export const referenceFilterParamsMap: FilterParams['referenceParamsMap'] = [
+  {
+    key: 'job',
+    mapFilter: (values: string[]): IncludeOptions => {
+      return {
+        model: Job,
+        where: {
+          name: { [Op.in]: values },
+        },
+      };
+    },
+  },
+];

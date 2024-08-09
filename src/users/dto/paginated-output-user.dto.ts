@@ -1,15 +1,9 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import { Exclude, Expose, Transform, Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { OutputUserDto } from './output-user.dto';
+import { PaginatedDto } from 'common/dto/paginated.dto';
 
-@Exclude()
-export class PaginatedOutputUserDto {
+export class PaginatedOutputUserDto extends PaginatedDto<OutputUserDto> {
   @Expose()
-  @IsNumber()
-  @IsNotEmpty()
-  readonly count: number;
-
-  @Expose()
-  //   @Type(() => OutputUserDto)
+  @Type(() => OutputUserDto)
   readonly rows: OutputUserDto[];
 }
