@@ -4,7 +4,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-import { QueryObj } from 'common/QueryObjType';
+import { QueryDto } from 'common/QueryDto';
 import getDbQueryOptions from 'common/getDbQueryOptions';
 import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 import { USER_REPOSITORY } from './constants';
@@ -15,7 +15,7 @@ export class UsersService {
     @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
   ) {}
 
-  async getAll(query: QueryObj) {
+  async getAll(query: QueryDto) {
     const options = getDbQueryOptions(query, [
       'firstName',
       'lastName',
@@ -33,7 +33,7 @@ export class UsersService {
     const user = await this.userRepository.scope('withJob').findByPk(id);
 
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException(`User not found`);
     }
 
     return user;
@@ -57,7 +57,7 @@ export class UsersService {
       await this._editJob(updateUserDto.job.id, updatedUser);
 
     if (!numberOfAffectedRows) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException(`User not found`);
     }
 
     return updatedUser;

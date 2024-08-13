@@ -5,11 +5,11 @@ import { JobsService } from './jobs.service';
 
 @Controller('jobs')
 export class JobsController {
-  constructor(private readonly rolesService: JobsService) {}
+  constructor(private readonly jobsService: JobsService) {}
 
   @UseInterceptors(new TransformInterceptor(JobOutputDto))
   @Get()
   findAll() {
-    return this.rolesService.findAll();
+    return this.jobsService.findAll();
   }
 }

@@ -1,8 +1,8 @@
 import { FindAndCountOptions, Op } from 'sequelize';
-import { QueryObj } from './QueryObjType';
+import { QueryDto } from './QueryDto';
 
 export default function getDbQueryOptions(
-  query: QueryObj,
+  query: QueryDto,
   searchFields: string[],
 ): FindAndCountOptions {
   const {
