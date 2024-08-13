@@ -16,11 +16,10 @@ export class UsersService {
   ) {}
 
   async getAll(query: QueryDto) {
-    const options = getDbQueryOptions(query, [
-      'firstName',
-      'lastName',
-      'email',
-    ]);
+    const options = getDbQueryOptions({
+      query,
+      searchFields: ['firstName', 'lastName', 'email'],
+    });
 
     const users = await this.userRepository
       .scope('withJob')
