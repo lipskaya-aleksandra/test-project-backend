@@ -22,7 +22,7 @@ const sequelizeConfig: SequelizeOptions = {
   //   return entityName === member.toLowerCase();
   // },
 
-  // timezone: '+00:00', // ??
+  timezone: '+00:00',
 };
 
 export default sequelizeConfig;

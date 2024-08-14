@@ -1,10 +1,11 @@
 import { FindAndCountOptions, Op } from 'sequelize';
-import { QueryObj } from './QueryObjType';
+import { QueryDto } from './QueryDto';
 
-export default function getDbQueryOptions(
-  query: QueryObj,
-  searchFields: string[],
-): FindAndCountOptions {
+export default function getDbQueryOptions(props: {
+  query: QueryDto;
+  searchFields: string[];
+}): FindAndCountOptions {
+  const { query, searchFields } = props;
   const {
     paginationQuery: { page, perPage },
     searchTerm,

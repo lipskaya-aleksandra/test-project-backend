@@ -32,6 +32,11 @@ export const up: Migration = async ({ context }) => {
 
 export const down: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
-    await context.bulkDelete('Users', null, { transaction });
+    await context.bulkDelete(
+      'Users',
+      null,
+      // @ts-expect-error: options exist according to the docs
+      { truncate: true, transaction, restartIdentity: true },
+    );
   });
 };
