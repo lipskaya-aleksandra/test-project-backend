@@ -10,5 +10,6 @@
       "database": "postgres",
       "password": "testProjectPwd"
     }
-  ]
+  ],
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }

@@ -1,11 +1,13 @@
-import { IsNotEmpty, IsInt, Min, IsString } from 'class-validator';
+import { IsNotEmpty, IsInt, Min, IsString, ValidateIf } from 'class-validator';
 
 export class JobReferenceDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  @ValidateIf((object, value) => value !== null)
+  name: string | null;
 
   @Min(0)
   @IsInt()
-  id: number;
+  @ValidateIf((object, value) => value !== null)
+  id: number | null;
 }

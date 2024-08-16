@@ -13,20 +13,12 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationQueryDto } from 'common/dto/pagination-query.dto';
 import { OutputUserDto } from './dto/output-user.dto';
 import { TransformInterceptor } from '../common/interceptors/plain-to-class.interceptor';
-import { SortQueryDto } from 'common/dto/sort-query.dto';
-import { SortParams } from 'common/decorators/sort-params.decorator';
-import { FilterParams } from 'common/decorators/filter-params.decorator';
-import {
-  filterableUserProps,
-  referenceFilterParamsMap,
-  sortableUserProps,
-} from './entities/user.entity';
 import { PaginatedOutputUserDto } from './dto/paginated-output-user.dto';
-import { WhereOptions } from 'sequelize';
 import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
+import { UserQueryDto } from './dto/user-query-dto';
+import { instanceToPlain } from 'class-transformer';
 
 @Controller('users')
 export class UsersController {
@@ -34,23 +26,9 @@ export class UsersController {
 
   @UseInterceptors(new TransformInterceptor(PaginatedOutputUserDto))
   @Get()
-  getAll(
-    @Query() paginationQuery: PaginationQueryDto,
-    @FilterParams({
-      accept: filterableUserProps,
-      referenceParamsMap: referenceFilterParamsMap,
-    })
-    filters?: WhereOptions,
-    @SortParams(sortableUserProps)
-    sortQuery?: SortQueryDto,
-    @Query('search') searchTerm?: string,
-  ) {
-    const users = this.usersService.getAll({
-      paginationQuery,
-      filters,
-      sortQuery,
-      searchTerm,
-    });
+  getAll(@Query() query: UserQueryDto) {
+    console.log(instanceToPlain(query));
+    const users = this.usersService.getAll(query);
 
     return users;
   }
@@ -95,7 +73,6 @@ export class UsersController {
 
   @Delete()
   deleteManyUsers(@Body() ids: number[]) {
-    console.log(ids);
     return this.usersService.deleteMany(ids);
   }
 }

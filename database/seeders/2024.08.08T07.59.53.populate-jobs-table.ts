@@ -26,7 +26,7 @@ export const down: Migration = async ({ context }) => {
   context.sequelize.transaction(async (transaction) => {
     await context.bulkDelete(
       'Jobs',
-      null,
+      {},
       // @ts-expect-error: options exist according to the docs
       { truncate: true, transaction, restartIdentity: true },
       Job,

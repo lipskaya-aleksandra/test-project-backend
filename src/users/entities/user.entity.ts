@@ -1,6 +1,5 @@
-import { FilterParams } from 'common/decorators/filter-params.decorator';
 import { Job } from 'jobs/entities/job.entity';
-import { BelongsToSetAssociationMixin, IncludeOptions, Op } from 'sequelize';
+import { BelongsToSetAssociationMixin, FindOptions, Op } from 'sequelize';
 import {
   Table,
   Column,
@@ -13,9 +12,35 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 
+const searchFields = ['firstName', 'lastName', 'email'];
+
 @Scopes(() => ({
   withJob: {
     include: { model: Job },
+  },
+  whereJob(jobs: string | string[]): FindOptions<User> {
+    return {
+      include: {
+        model: Job,
+        where: {
+          name: Array.isArray(jobs) ? { [Op.in]: jobs } : jobs,
+        },
+      },
+    };
+  },
+  whereStatus(status: string): FindOptions<User> {
+    return {
+      where: { status },
+    };
+  },
+  withSearch(searchTerm: string): FindOptions<User> {
+    return {
+      where: {
+        [Op.or]: searchFields.map((field) => ({
+          [field]: { [Op.like]: `%${searchTerm}%` },
+        })),
+      },
+    };
   },
 }))
 @Table({ tableName: 'Users' })
@@ -62,7 +87,7 @@ export class User extends Model<User> {
   @BelongsTo(() => Job, 'jobId')
   job: Job;
 
-  setJob: BelongsToSetAssociationMixin<Job, User['jobId']>;
+  setJob: BelongsToSetAssociationMixin<Job, User['jobId'] | null>;
 }
 
 export const sortableUserProps = [
@@ -75,17 +100,3 @@ export const sortableUserProps = [
 ] as const;
 
 export const filterableUserProps = ['status'] as const;
-
-export const referenceFilterParamsMap: FilterParams['referenceParamsMap'] = [
-  {
-    key: 'job',
-    mapFilter: (values: string[]): IncludeOptions => {
-      return {
-        model: Job,
-        where: {
-          name: { [Op.in]: values },
-        },
-      };
-    },
-  },
-];

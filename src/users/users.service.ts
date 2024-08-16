@@ -4,10 +4,12 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-import { QueryDto } from 'common/QueryDto';
-import getDbQueryOptions from 'common/getDbQueryOptions';
+// import { QueryDto } from 'common/dto/query.dto';
+//import getDbQueryOptions from 'common/getDbQueryOptions';
 import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 import { USER_REPOSITORY } from './constants';
+import { CreationAttributes } from 'sequelize';
+import { UserQueryDto } from './dto/user-query-dto';
 
 @Injectable()
 export class UsersService {
@@ -15,15 +17,12 @@ export class UsersService {
     @Inject(USER_REPOSITORY) private readonly userRepository: typeof User,
   ) {}
 
-  async getAll(query: QueryDto) {
-    const options = getDbQueryOptions({
-      query,
-      searchFields: ['firstName', 'lastName', 'email'],
-    });
+  async getAll(query: UserQueryDto) {
+    const { scopes, queryOptions } = query.getDbQueryOptions();
 
     const users = await this.userRepository
-      .scope('withJob')
-      .findAndCountAll(options);
+      .scope(scopes)
+      .findAndCountAll(queryOptions);
 
     return users;
   }
@@ -39,18 +38,23 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const user = await this.userRepository.create(omit(createUserDto, 'job'));
-    await user.setJob(createUserDto.job.id);
+    const user = await this.userRepository.create(
+      omit(createUserDto, 'job') as CreationAttributes<User>,
+    );
+    await user.setJob(createUserDto.job?.id ?? null);
 
     return user;
   }
 
   async edit(id: number, updateUserDto: UpdateUserDto) {
     const [numberOfAffectedRows, [updatedUser]] =
-      await this.userRepository.update(omit(updateUserDto, 'job'), {
-        where: { id },
-        returning: true,
-      });
+      await this.userRepository.update(
+        { email: updateUserDto.email },
+        {
+          where: { id },
+          returning: true,
+        },
+      );
 
     if (!numberOfAffectedRows) {
       throw new NotFoundException(`User not found`);
@@ -62,7 +66,7 @@ export class UsersService {
     return updatedUser;
   }
 
-  private async _editJob(id: number, user: User) {
+  private async _editJob(id: number | null, user: User) {
     await user.setJob(id);
   }
 
