@@ -13,15 +13,7 @@ const sequelizeConfig: SequelizeOptions = {
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  models: [User, Job], //path.join(__dirname, '/../**/**/*.model.ts')
-  // modelMatch: (filename, member) => {
-  //   console.log({ filename, member });
-
-  //   const entityName = filename.substring(0, filename.indexOf('.model'));
-
-  //   return entityName === member.toLowerCase();
-  // },
-
+  models: [User, Job],
   timezone: '+00:00',
 };
 

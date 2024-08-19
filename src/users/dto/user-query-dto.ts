@@ -1,5 +1,5 @@
 import { IsIn, IsOptional, IsString } from 'class-validator';
-import { PaginationAndSortingQueryDto } from 'common/dto/pagination-query.dto';
+import { PaginationAndSortingQueryDto } from 'common/dto/pagination-and-sorting-query.dto';
 
 import { DbQueryOptions, QueryDto } from 'common/query.interface';
 import { merge } from 'lodash';
