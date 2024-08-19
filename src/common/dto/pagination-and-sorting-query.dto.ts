@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { DbQueryOptions, QueryDto } from 'common/query.interface';
 
-export class PaginationAndSortingQueryDto implements QueryDto {
+export abstract class PaginationAndSortingQueryDto implements QueryDto {
   @IsPositive()
   @IsNotEmpty()
   @Type(() => Number)
@@ -21,7 +21,7 @@ export class PaginationAndSortingQueryDto implements QueryDto {
 
   @IsString()
   @IsOptional()
-  sortBy: string = 'id';
+  abstract sortBy: string;
 
   @IsIn(['asc', 'desc'])
   @IsString()
