@@ -10,5 +10,6 @@ import { Job } from 'jobs/entities/job.entity';
   imports: [SequelizeModule.forFeature([User, Job])],
   controllers: [UsersController],
   providers: [UsersService, ...usersProviders],
+  exports: [UsersService],
 })
 export class UsersModule {}

@@ -3,13 +3,11 @@ import { omit } from 'lodash';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
-// import { QueryDto } from 'common/dto/query.dto';
-//import getDbQueryOptions from 'common/getDbQueryOptions';
 import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 import { USER_REPOSITORY } from './constants';
 import { CreationAttributes } from 'sequelize';
 import { UserQueryDto } from './dto/user-query-dto';
+import * as argon2 from 'argon2';
 
 @Injectable()
 export class UsersService {
@@ -37,7 +35,20 @@ export class UsersService {
     return user;
   }
 
+  async getByEmail(email: string) {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    // if (!user) {
+    //   throw new NotFoundException(`User not found`);
+    // }
+
+    return user;
+  }
+
   async create(createUserDto: CreateUserDto) {
+    if (createUserDto.password) {
+      createUserDto.password = await argon2.hash(createUserDto.password);
+    }
     const user = await this.userRepository.create(
       omit(createUserDto, 'job') as CreationAttributes<User>,
     );

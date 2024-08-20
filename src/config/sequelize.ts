@@ -3,8 +3,9 @@ import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { User } from 'users/entities/user.entity';
 import { Job } from 'jobs/entities/job.entity';
+import { RefreshToken } from 'authentication/entities/refresh-token.entity';
 
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+dotenv.config({ path: path.join(process.cwd(), 'database.env') });
 
 const sequelizeConfig: SequelizeOptions = {
   dialect: 'postgres',
@@ -13,7 +14,7 @@ const sequelizeConfig: SequelizeOptions = {
   username: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  models: [User, Job],
+  models: [User, Job, RefreshToken],
   timezone: '+00:00',
 };
 
