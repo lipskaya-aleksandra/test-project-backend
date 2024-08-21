@@ -14,25 +14,25 @@ import { RefreshToken } from './entities/refresh-token.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { CreationAttributes, Op } from 'sequelize';
 import getOffsetDate from 'common/utils/getOffsetDate';
-import * as path from 'path';
-import * as dotenv from 'dotenv';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
-
-dotenv.config({ path: path.join(process.cwd(), 'jwt.env') });
+import { omit } from 'lodash';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     private readonly usersService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
     @Inject(REFRESH_TOKEN_REPOSITORY)
     private readonly refreshTokenRepository: typeof RefreshToken,
   ) {}
-  async signIn(signInDto: SignInDto) {
+
+  async validateUser(signInDto: SignInDto) {
     const user = await this.usersService.getByEmail(signInDto.email);
 
     if (!user) {
-      throw new UnauthorizedException('Wrong credentials');
+      return null;
     }
 
     const isValidPassword = await argon2.verify(
@@ -41,10 +41,14 @@ export class AuthenticationService {
     );
 
     if (!isValidPassword) {
-      throw new UnauthorizedException('Wrong credentials');
+      return null;
     }
 
-    return await this.createOrUpdateRefreshToken(user.id);
+    return omit(user.dataValues, 'password');
+  }
+
+  async signIn(userId: number) {
+    return await this.createOrUpdateRefreshToken(userId);
   }
 
   async generateUserTokens(userId: number) {
@@ -56,7 +60,7 @@ export class AuthenticationService {
 
   async createOrUpdateRefreshToken(userId: number) {
     const expiryDate = getOffsetDate(
-      process.env.REFRESH_TOKEN_EXPIRES_IN || '3d',
+      this.configService.get('REFRESH_TOKEN_EXPIRES_IN') || '3d',
     );
 
     const { accessToken, refreshToken } = await this.generateUserTokens(userId);
@@ -87,16 +91,7 @@ export class AuthenticationService {
       throw new UnauthorizedException('Refresh token is invalid');
     }
 
-    // const { accessToken, refreshToken } = await this.generateUserTokens(
-    //   token.userId,
-    // );
-
-    // await this.refreshTokenRepository.update(
-    //   { token: refreshToken },
-    //   { where: { token: token.token } },
-    // );
-
-    return await this.createOrUpdateRefreshToken(token.userId); //{ accessToken, refreshToken };
+    return await this.createOrUpdateRefreshToken(token.userId);
   }
 
   async signUp(signUpDto: SignUpDto) {

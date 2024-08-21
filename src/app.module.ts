@@ -1,30 +1,32 @@
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
-import { ConfigModule } from '@nestjs/config';
-import * as Joi from 'joi';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import sequelizeConfig from './config/sequelize';
 import { JobsModule } from 'jobs/jobs.module';
-import { AuthenticationModule } from './authentication/authentication.module';
+import { AuthenticationModule } from './core/authentication/authentication.module';
 import { JwtModule } from '@nestjs/jwt';
-import * as path from 'path';
-import * as dotenv from 'dotenv';
+// import * as path from 'path';
+// import * as dotenv from 'dotenv';
+import { EnvVariables, validationSchema } from 'config/envVariables';
 
-dotenv.config({ path: path.join(process.cwd(), 'jwt.env') });
+// dotenv.config({ path: path.join(process.cwd(), 'jwt.env') });
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      validationSchema: Joi.object({
-        DATABASE_HOST: Joi.required(),
-        DATABASE_PORT: Joi.number().default(5432),
-        JWT_SECRET: Joi.required(),
-      }),
+      validationSchema,
       isGlobal: true,
-      envFilePath: ['database.env', 'jwt.env'],
+      envFilePath: ['.env'],
     }),
 
-    SequelizeModule.forRoot(sequelizeConfig),
+    SequelizeModule.forRootAsync({
+      useFactory: async () => ({
+        ...sequelizeConfig,
+        autoLoadModels: true,
+        logging: false,
+      }),
+    }),
 
     UsersModule,
 
@@ -34,12 +36,13 @@ dotenv.config({ path: path.join(process.cwd(), 'jwt.env') });
 
     JwtModule.registerAsync({
       global: true,
-      useFactory: async () => ({
-        secret: process.env.JWT_SECRET,
+      useFactory: async (configService: ConfigService<EnvVariables>) => ({
+        secret: configService.get('JWT_SECRET', { infer: true }),
         signOptions: {
-          expiresIn: process.env.JWT_EXPIRES_IN,
+          expiresIn: configService.get('JWT_EXPIRES_IN', { infer: true }),
         },
       }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [],

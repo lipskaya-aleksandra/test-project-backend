@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
+  // UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -19,13 +19,13 @@ import { TransformInterceptor } from '../common/interceptors/plain-to-class.inte
 import { PaginatedOutputUserDto } from './dto/paginated-output-user.dto';
 import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 import { UserQueryDto } from './dto/user-query-dto';
-import { AuthGuard } from 'common/guards/auth.guard';
+// import { JwtAuthGuard } from 'core/authentication/guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(PaginatedOutputUserDto))
   @Get()
   getAll(@Query() query: UserQueryDto) {

@@ -8,7 +8,7 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
-import { JobReferenceDto } from 'jobs/dto/reference-job.dto';
+import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 
 export class CreateUserDto {
   @IsString()
@@ -31,6 +31,6 @@ export class CreateUserDto {
   password?: string;
 
   @IsOptional()
-  @Type(() => JobReferenceDto)
-  job?: JobReferenceDto;
+  @Type(() => UpdateUserJobDto)
+  job?: UpdateUserJobDto;
 }
