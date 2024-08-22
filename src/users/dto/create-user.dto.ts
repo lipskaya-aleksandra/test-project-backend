@@ -1,4 +1,3 @@
-import { Type } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -8,7 +7,6 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
-import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 
 export class CreateUserDto {
   @IsString()
@@ -31,6 +29,5 @@ export class CreateUserDto {
   password?: string;
 
   @IsOptional()
-  @Type(() => UpdateUserJobDto)
-  job?: UpdateUserJobDto;
+  jobId?: number | null;
 }

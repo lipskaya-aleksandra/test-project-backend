@@ -21,6 +21,7 @@ export const up: Migration = async ({ context }) => {
             model: 'Users',
             key: 'id',
           },
+          onDelete: 'CASCADE',
         },
         createdAt: {
           type: DataTypes.DATE,
