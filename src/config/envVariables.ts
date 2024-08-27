@@ -13,6 +13,7 @@ export const validationSchema = Joi.object({
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().required(),
   REFRESH_TOKEN_EXPIRES_IN: Joi.string().required(),
+  RESET_PWD_TOKEN_EXPIRES_IN: Joi.string().required(),
 });
 
 const result = validationSchema.validate(process.env, {
@@ -27,6 +28,7 @@ if (result.error) {
 export type EnvVariables = {
   JWT_EXPIRES_IN: string;
   REFRESH_TOKEN_EXPIRES_IN: string;
+  RESET_PWD_TOKEN_EXPIRES_IN: string;
   JWT_SECRET: string;
   DATABASE_USER: string;
   DATABASE_PASSWORD: string;

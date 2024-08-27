@@ -44,6 +44,7 @@ export class UsersService {
 
   async getByEmail(email: string) {
     const user = await this.userRepository.findOne({ where: { email } });
+
     return user;
   }
 
@@ -94,6 +95,7 @@ export class UsersService {
         throw new NotFoundException('Wrong job id provided');
       }
     }
+
     await user.setJob(id);
   }
 
@@ -102,6 +104,12 @@ export class UsersService {
     await this._editJob(updateUserJobDto.id, user);
 
     return user;
+  }
+
+  async editPassword(id: number, password: string) {
+    const user = await this.getById(id);
+    const hashedPassword = await argon2.hash(password);
+    await user.update({ password: hashedPassword });
   }
 
   async delete(id: number) {

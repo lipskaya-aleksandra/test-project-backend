@@ -8,8 +8,8 @@ import {
 } from 'sequelize-typescript';
 import { User } from 'users/entities/user.entity';
 
-@Table({ tableName: 'RefreshTokens' })
-export class RefreshToken extends Model<RefreshToken> {
+@Table({ tableName: 'ResetPasswordTokens' })
+export class ResetPasswordToken extends Model<ResetPasswordToken> {
   @Column({
     type: DataType.STRING,
   })
