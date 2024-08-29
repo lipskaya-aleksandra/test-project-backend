@@ -3,6 +3,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { UserIdentityDto } from 'users/dto/user-identity.dto';
+import { ConfigService } from '@nestjs/config';
+import { EnvVariables } from 'config/envVariables';
 
 function cookieExtractor(req: Request) {
   if (req && req.cookies) {
@@ -12,11 +14,11 @@ function cookieExtractor(req: Request) {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private configService: ConfigService<EnvVariables>) {
     super({
       jwtFromRequest: cookieExtractor,
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET, // can it be accessed with configService?
+      secretOrKey: configService.get('JWT_SECRET'),
     });
   }
 

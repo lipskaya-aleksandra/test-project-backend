@@ -5,7 +5,6 @@ import {
   UseGuards,
   Res,
   Request,
-  UnauthorizedException,
   Req,
 } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
@@ -41,10 +40,12 @@ export class AuthenticationController {
   @Post('refresh-tokens')
   async refreshTokens(
     @Res({ passthrough: true }) response: Response,
-    @Body() refreshTokenDto: string,
+    @Req() request: ExpressRequest,
   ) {
+    const token = request.cookies['refreshToken'];
+
     const { accessToken, refreshToken } =
-      await this.authenticationService.refreshTokens(refreshTokenDto);
+      await this.authenticationService.refreshTokens(token);
 
     response.cookie('accessToken', accessToken, { httpOnly: true });
     response.cookie('refreshToken', refreshToken, { httpOnly: true });
@@ -54,19 +55,16 @@ export class AuthenticationController {
 
   @Post('request-password-reset')
   async requestPasswordReset(@Body('email') email: string) {
-    const token = await this.authenticationService.requestPasswordReset(email);
-    if (token) {
-      return `/password-reset?resetPasswordToken=${token}`;
-    }
-    throw new UnauthorizedException('Incorrect email provided.');
+    return await this.authenticationService.requestPasswordReset(email);
   }
 
   @Post('reset-password')
   async resetPassword(
     @Body('password') password: string,
-    @Req() request: ExpressRequest,
+    @Body('resetPasswordToken') token: string,
+    // @Req() request: ExpressRequest,
   ) {
-    const token = request.cookies['resetPasswordToken'];
+    // const token = request.cookies['resetPasswordToken'];
     return this.authenticationService.resetPassword(password, token);
   }
 }

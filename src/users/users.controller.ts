@@ -21,11 +21,11 @@ import { UpdateUserJobDto } from 'jobs/dto/update-user-job.dto';
 import { UserQueryDto } from './dto/user-query-dto';
 import { JwtAuthGuard } from 'core/authentication/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(new TransformInterceptor(PaginatedOutputUserDto))
   @Get()
   getAll(@Query() query: UserQueryDto) {

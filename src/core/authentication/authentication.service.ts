@@ -81,6 +81,10 @@ export class AuthenticationService {
   }
 
   async refreshTokens(refreshToken: string) {
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token is invalid');
+    }
+
     const token = await this.refreshTokenRepository.findOne({
       where: {
         token: refreshToken,
@@ -110,27 +114,28 @@ export class AuthenticationService {
     const user = await this.usersService.getByEmail(email);
 
     if (!user) {
-      return;
+      throw new UnauthorizedException('Incorrect email provided.');
     }
 
     const expiryDate = getOffsetDate(
-      this.configService.get('REFRESH_TOKEN_EXPIRES_IN', { infer: true }),
+      this.configService.get('RESET_PWD_TOKEN_EXPIRES_IN', { infer: true }),
     );
 
-    const resetPasswordToken = randomBytes(256).toString('utf8');
-    const [token] = await this.refreshTokenRepository.upsert(
+    const resetPasswordToken = randomBytes(10).toString('hex');
+    const [token] = await this.resetPasswordTokenRepository.upsert(
       {
         token: resetPasswordToken,
         userId: user.id,
         expiryDate,
-      } as CreationAttributes<RefreshToken>,
+      } as CreationAttributes<ResetPasswordToken>,
       { returning: true, conflictWhere: { userId: user.id } },
     );
 
-    return token.token;
+    return `/password-reset?resetPasswordToken=${token.token}`;
   }
 
   async resetPassword(password: string, token: string) {
+    console.log(token);
     const resetPasswordToken = await this.resetPasswordTokenRepository.findOne({
       where: {
         token,
