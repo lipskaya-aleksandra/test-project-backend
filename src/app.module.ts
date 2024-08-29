@@ -6,11 +6,8 @@ import sequelizeConfig from './config/sequelize';
 import { JobsModule } from 'jobs/jobs.module';
 import { AuthenticationModule } from './core/authentication/authentication.module';
 import { JwtModule } from '@nestjs/jwt';
-// import * as path from 'path';
-// import * as dotenv from 'dotenv';
 import { EnvVariables, validationSchema } from 'config/envVariables';
-
-// dotenv.config({ path: path.join(process.cwd(), 'jwt.env') });
+import { AccountModule } from 'core/account/account.module';
 
 @Module({
   imports: [
@@ -33,6 +30,8 @@ import { EnvVariables, validationSchema } from 'config/envVariables';
     JobsModule,
 
     AuthenticationModule,
+
+    AccountModule,
 
     JwtModule.registerAsync({
       global: true,
