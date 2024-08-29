@@ -55,7 +55,7 @@ export class AuthenticationService {
   }
 
   private generateTokenPair(payload: UserIdentityDto) {
-    const accessToken = this.jwtService.sign({ id: payload });
+    const accessToken = this.jwtService.sign(payload);
     const refreshToken = uuidv4();
 
     return { accessToken, refreshToken };

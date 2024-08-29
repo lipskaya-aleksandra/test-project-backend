@@ -62,9 +62,7 @@ export class AuthenticationController {
   async resetPassword(
     @Body('password') password: string,
     @Body('resetPasswordToken') token: string,
-    // @Req() request: ExpressRequest,
   ) {
-    // const token = request.cookies['resetPasswordToken'];
     return this.authenticationService.resetPassword(password, token);
   }
 }

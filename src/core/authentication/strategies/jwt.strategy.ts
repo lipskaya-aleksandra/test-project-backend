@@ -14,7 +14,7 @@ function cookieExtractor(req: Request) {
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService<EnvVariables>) {
+  constructor(private configService: ConfigService<EnvVariables, true>) {
     super({
       jwtFromRequest: cookieExtractor,
       ignoreExpiration: false,
