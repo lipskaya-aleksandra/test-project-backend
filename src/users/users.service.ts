@@ -14,6 +14,7 @@ import { CreationAttributes } from 'sequelize';
 import { UserQueryDto } from './dto/user-query-dto';
 import * as argon2 from 'argon2';
 import { JobsService } from 'jobs/jobs.service';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -69,13 +70,10 @@ export class UsersService {
 
   async edit(id: number, updateUserDto: UpdateUserDto) {
     const [numberOfAffectedRows, [updatedUser]] =
-      await this.userRepository.update(
-        { email: updateUserDto.email },
-        {
-          where: { id },
-          returning: true,
-        },
-      );
+      await this.userRepository.update(instanceToPlain(updateUserDto), {
+        where: { id },
+        returning: true,
+      });
 
     if (!numberOfAffectedRows) {
       throw new NotFoundException(`User not found`);
