@@ -65,4 +65,19 @@ export class AuthenticationController {
   ) {
     return this.authenticationService.resetPassword(password, token);
   }
+
+  @Post('signout')
+  async signOut(
+    @Res({ passthrough: true }) response: Response,
+    @Req() request: ExpressRequest,
+  ) {
+    const token = request.cookies['refreshToken'];
+
+    await this.authenticationService.signOut(token);
+
+    response.clearCookie('accessToken', { httpOnly: true });
+    response.clearCookie('refreshToken', { httpOnly: true });
+
+    return;
+  }
 }

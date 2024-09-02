@@ -55,7 +55,7 @@ export class AuthenticationService {
   }
 
   private generateTokenPair(payload: UserIdentityDto) {
-    const accessToken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign({ ...payload });
     const refreshToken = uuidv4();
 
     return { accessToken, refreshToken };
@@ -135,7 +135,6 @@ export class AuthenticationService {
   }
 
   async resetPassword(password: string, token: string) {
-    console.log(token);
     const resetPasswordToken = await this.resetPasswordTokenRepository.findOne({
       where: {
         token,
@@ -152,5 +151,13 @@ export class AuthenticationService {
     await this.usersService.editPassword(resetPasswordToken.userId, password);
 
     await this.resetPasswordTokenRepository.destroy({ where: { token } });
+  }
+
+  async signOut(token: string) {
+    if (!token) {
+      return;
+    }
+
+    await this.refreshTokenRepository.destroy({ where: { token } });
   }
 }
