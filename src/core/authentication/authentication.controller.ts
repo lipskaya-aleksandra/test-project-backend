@@ -12,6 +12,7 @@ import { SignUpDto } from './dto/sign-up.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthRequestDto } from './dto/auth-request.dto';
 import { Request as ExpressRequest, Response } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthenticationController {
@@ -64,6 +65,18 @@ export class AuthenticationController {
     @Body('resetPasswordToken') token: string,
   ) {
     return this.authenticationService.resetPassword(password, token);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('authed-reset-password')
+  async authedResetPassword(
+    @Body('password') password: string,
+    @Request() request: AuthRequestDto,
+  ) {
+    return this.authenticationService.authedResetPassword(
+      password,
+      request.user,
+    );
   }
 
   @Post('signout')

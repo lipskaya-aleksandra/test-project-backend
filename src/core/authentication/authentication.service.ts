@@ -153,6 +153,10 @@ export class AuthenticationService {
     await this.resetPasswordTokenRepository.destroy({ where: { token } });
   }
 
+  async authedResetPassword(password: string, userIdentity: UserIdentityDto) {
+    await this.usersService.editPassword(userIdentity.id, password);
+  }
+
   async signOut(token: string) {
     if (!token) {
       return;
