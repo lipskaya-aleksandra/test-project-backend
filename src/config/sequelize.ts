@@ -27,7 +27,6 @@ const sequelizeConfig: SequelizeOptions = {
   // to the classes
 
   modelMatch: (filename, member) => {
-    console.log({ filename, member });
     const entityName = filename.substring(0, filename.indexOf('.entity'));
     return entityName === kebabCase(member);
   },

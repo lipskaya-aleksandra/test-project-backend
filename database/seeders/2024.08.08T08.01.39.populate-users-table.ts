@@ -6,6 +6,7 @@ import {
   randNumber,
 } from '@ngneat/falso';
 import { Migration } from 'config/umzug/seeders';
+import { STATUS_OPTIONS } from 'users/entities/user.entity';
 
 function generateUsers() {
   const users = [];
@@ -16,7 +17,7 @@ function generateUsers() {
       firstName: randFirstName(),
       lastName: randLastName(),
       jobId: randNumber({ min: 1, max: 12 }),
-      status: rand(['active', 'pending', 'blocked']),
+      status: rand(STATUS_OPTIONS),
     });
   }
 

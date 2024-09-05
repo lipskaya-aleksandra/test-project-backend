@@ -14,6 +14,9 @@ import {
 
 const searchFields = ['firstName', 'lastName', 'email'];
 
+export const DEFAULT_STATUS = 'pending';
+export const STATUS_OPTIONS = ['active', DEFAULT_STATUS, 'blocked'];
+
 @Scopes(() => ({
   withJob: {
     include: { model: Job },
@@ -52,32 +55,25 @@ export class User extends Model<User> {
   })
   id: number;
 
-  @Column({
-    type: DataType.STRING,
-  })
+  @Column({ type: DataType.STRING })
   firstName: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
+  @Column({ type: DataType.STRING })
   lastName: string;
 
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
+  @Column({ type: DataType.STRING, allowNull: false })
   email: string;
 
   @Column(DataType.VIRTUAL)
   fullName: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
+  @Column({ type: DataType.STRING })
   password: string;
 
   @Column({
     type: DataType.STRING,
+    defaultValue: DEFAULT_STATUS,
+    values: STATUS_OPTIONS,
   })
   status: string;
 
