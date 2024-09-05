@@ -9,6 +9,7 @@ export const up: Migration = async ({ context }) => {
       'status',
       {
         type: DataTypes.STRING,
+        allowNull: false,
         values: STATUS_OPTIONS,
         defaultValue: DEFAULT_STATUS,
       },

@@ -74,6 +74,7 @@ export class User extends Model<User> {
     type: DataType.STRING,
     defaultValue: DEFAULT_STATUS,
     values: STATUS_OPTIONS,
+    allowNull: false,
   })
   status: string;
 
