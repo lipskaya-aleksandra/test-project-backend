@@ -7,7 +7,7 @@ import { JobsModule } from 'jobs/jobs.module';
 import { AuthenticationModule } from './core/authentication/authentication.module';
 import { JwtModule } from '@nestjs/jwt';
 import { EnvVariables, validationSchema } from 'config/envVariables';
-import { AccountModule } from 'core/account/account.module';
+import { AccountModule } from 'account/account.module';
 
 @Module({
   imports: [
