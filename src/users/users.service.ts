@@ -27,7 +27,7 @@ export class UsersService {
     const { scopes, queryOptions } = query.getDbQueryOptions();
 
     const users = await this.userRepository
-      .scope([...scopes, 'withJob'])
+      .scope(['withJob', ...scopes])
       .findAndCountAll({ ...queryOptions, logging: true });
 
     return users;
