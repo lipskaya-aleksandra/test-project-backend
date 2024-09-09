@@ -21,7 +21,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   email: string;
 
-  @Matches(new RegExp('(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*W)'))
+  @Matches(/^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])[A-Za-z\d\W_]{8,}$/)
   @MinLength(8)
   @IsString()
   @ValidateIf((object, value) => !!value)

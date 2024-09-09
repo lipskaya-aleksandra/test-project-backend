@@ -28,7 +28,7 @@ export class UsersService {
 
     const users = await this.userRepository
       .scope(['withJob', ...scopes])
-      .findAndCountAll({ ...queryOptions, logging: true });
+      .findAndCountAll(queryOptions);
 
     return users;
   }
