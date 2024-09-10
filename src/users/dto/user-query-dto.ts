@@ -2,8 +2,6 @@ import { IsIn, IsOptional, IsString } from 'class-validator';
 import { PaginationAndSortingQueryDto } from 'common/dto/pagination-and-sorting-query.dto';
 
 import { DbQueryOptions, QueryDto } from 'common/query.interface';
-import { merge } from 'lodash';
-
 import { ScopeOptions } from 'sequelize';
 import { sortableUserProps } from 'users/entities/user.entity';
 
@@ -33,12 +31,9 @@ export class UserQueryDto
 
     const scopes: ScopeOptions[] = [];
 
-    merge(
-      scopes,
-      this.job && [{ method: ['whereJob', this.job] }],
-      this.status && [{ method: ['whereStatus', this.status] }],
-      this.search && [{ method: ['withSearch', this.search] }],
-    );
+    if (this.job) scopes.push({ method: ['whereJob', this.job] });
+    if (this.status) scopes.push({ method: ['whereStatus', this.status] });
+    if (this.search) scopes.push({ method: ['withSearch', this.search] });
 
     return {
       queryOptions,

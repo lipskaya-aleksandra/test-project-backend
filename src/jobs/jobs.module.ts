@@ -10,5 +10,6 @@ import { jobsProviders } from './jobs.providers';
   imports: [SequelizeModule.forFeature([Job])],
   controllers: [JobsController],
   providers: [JobsService, ...jobsProviders],
+  exports: [JobsService],
 })
 export class JobsModule {}

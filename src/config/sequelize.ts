@@ -1,19 +1,36 @@
 import { SequelizeOptions } from 'sequelize-typescript';
 import * as path from 'path';
-import * as dotenv from 'dotenv';
-import { User } from 'users/entities/user.entity';
-import { Job } from 'jobs/entities/job.entity';
+import { kebabCase } from 'lodash';
 
-dotenv.config({ path: path.join(process.cwd(), '.env') });
+import { vars } from './envVariables';
+
+const {
+  DATABASE_HOST,
+  DATABASE_NAME,
+  DATABASE_PASSWORD,
+  DATABASE_PORT,
+  DATABASE_USER,
+} = vars;
 
 const sequelizeConfig: SequelizeOptions = {
   dialect: 'postgres',
-  host: process.env.DATABASE_HOST,
-  port: +(process.env.DATABASE_PORT ?? 3000),
-  username: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  models: [User, Job],
+
+  host: DATABASE_HOST,
+  port: DATABASE_PORT,
+  username: DATABASE_USER,
+  password: DATABASE_PASSWORD,
+  database: DATABASE_NAME,
+
+  // NOTE: modelMatch works only with SequelizeModule.forRootAsync
+  // (option {autoLoadModels: true} is needed)
+  // for SequelizeModule.forRoot models must be passed as an array of pointers
+  // to the classes
+
+  modelMatch: (filename, member) => {
+    const entityName = filename.substring(0, filename.indexOf('.entity'));
+    return entityName === kebabCase(member);
+  },
+  models: [path.join(__dirname, '/../**/**/*.entity.ts')],
   timezone: '+00:00',
 };
 

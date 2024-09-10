@@ -1,6 +1,12 @@
-import { Type } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { JobReferenceDto } from 'jobs/dto/reference-job.dto';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -15,10 +21,13 @@ export class CreateUserDto {
   @IsNotEmpty()
   email: string;
 
+  @Matches(/^(?=.*d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])[A-Za-z\d\W_]{8,}$/)
+  @MinLength(8)
+  @IsString()
+  @ValidateIf((object, value) => !!value)
   @IsOptional()
   password?: string;
 
   @IsOptional()
-  @Type(() => JobReferenceDto)
-  job?: JobReferenceDto;
+  jobId?: number | null;
 }
